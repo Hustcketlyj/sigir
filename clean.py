@@ -314,8 +314,8 @@ for i in range(20):
   #lm_datasets
   data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
   wwm_probability = 0.15
-  train_size = 29
-  test_size = 3
+  train_size = 28
+  test_size = 2
   downsampled_dataset = lm_datasets["train"].train_test_split(
       train_size=train_size, test_size=test_size, seed=42
   )

@@ -66,7 +66,7 @@ def subsample(filename='train_selected_person_nn.json',n=20):
   f.close()
 
 def tokenize_function(examples):
-    result = tokenizer(examples["text"],padding='max_length', max_length=32)
+    result = tokenizer(examples["text"],padding='max_length', max_length=128)
     if tokenizer.is_fast:
         result["word_ids"] = [result.word_ids(i) for i in range(len(result["input_ids"]))]
     return result
@@ -89,19 +89,19 @@ def group_texts(examples):
 
 def whole_word_masking_data_collator(features):
     for feature in features:
+        #print('before',len(feature['input_ids']))
+        #print(feature['input_ids'])
         word_ids = feature.pop("word_ids")
         tmp_id=feature["input_ids"]
-        #print(feature)
-        #print(word_ids)
-        #print(len(word_ids),len(tmp_id),len(feature["labels"]))
+        # Create a map between words and corresponding token indices
         anchor=None
         for idx, i_id in enumerate(tmp_id):
-          if i_id==102 and not anchor:
+          if i_id==102:
             anchor=idx
-            #print('find pos:',anchor)
+            print('find pos:',anchor)
+            break
         word_ids_remain=word_ids[anchor:]
         word_ids=word_ids[:anchor]
-        # Create a map between words and corresponding token indices
         mapping = collections.defaultdict(list)
         current_word_index = -1
         current_word = None
@@ -128,8 +128,8 @@ def whole_word_masking_data_collator(features):
         feature["input_ids"]=input_ids
         feature["labels"] = new_labels
         word_ids+=word_ids_remain
-        #print(len(word_ids),len(feature['input_ids']),len(feature["labels"]))
-    return tf_default_data_collator(features)
+        #print('after',len(feature['input_ids']))
+    return default_data_collator(features)
 
 def NerMask(sentence,unmasker,evidence):#label is supported
   text=sentence.replace('SUPPORTED ','')
@@ -308,7 +308,7 @@ for i in range(20):
       tokenize_function, batched=True, remove_columns=["text",'id']
   )
   print('datasets tokenized...')
-  chunk_size = 32
+  chunk_size = 128
   lm_datasets = tokenized_datasets.map(group_texts, batched=True)
   print('datasets complete...')
   #lm_datasets

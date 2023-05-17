@@ -149,25 +149,25 @@ def NerMask(sentence,unmasker,evidence):#label is supported
     masked_sent=text[:start_pos]+'[MASK]'+text[end_pos:]
     masked_sent_0='SUPPORTED '+masked_sent+' SUPPORTED'+' [SEP] '+evidence
     DA_0=unmasker(masked_sent_0)[0]['sequence']
-    entity_0=nlp(DA_0)
-    entity_0=[i for i in entity_0.ents if i.label_!='PERSON']
     masked_sent_1='REFUTED '+masked_sent+' REFUTED'+' [SEP] '+evidence
     DA_1=unmasker(masked_sent_1)[0]['sequence']
-    entity_1=nlp(DA_1)
-    entity_1=[i for i in entity_1.ents if i.label_!='PERSON']
     masked_sent_2='NOT ENOUGH INFORMATION '+masked_sent+' NOT ENOUGH INFORMATION'+' [SEP] '+evidence
     DA_2=unmasker(masked_sent_2)[0]['sequence']
-    entity_2=nlp(DA_2)
-    entity_2=[i for i in entity_2.ents if i.label_!='PERSON']
-    DA_0=DA_0.split(' [SEP] ')[0]
-    DA_1=DA_1.split(' [SEP] ')[0]
-    DA_2=DA_2.split(' [SEP] ')[0]
+    DA_0=DA_0.split(' SUPPORTED')[0]
+    DA_1=DA_1.split(' REFUTED')[0]
+    DA_2=DA_2.split(' NOT ENOUGH INFORMATION')[0]
     DA_0=DA_0.replace('SUPPORTED ','')
     DA_1=DA_1.replace('REFUTED ','')
     DA_0=DA_0.replace(' SUPPORTED','')
+    entity_0=nlp(DA_0)
+    entity_0=[i for i in entity_0.ents if i.label_!='PERSON']
     DA_1=DA_1.replace(' REFUTED','')
+    entity_1=nlp(DA_1)
+    entity_1=[i for i in entity_1.ents if i.label_!='PERSON']
     DA_2=DA_2.replace('NOT ENOUGH INFORMATION ','')
     DA_2=DA_2.replace(' NOT ENOUGH INFORMATION','')
+    entity_2=nlp(DA_2)
+    entity_2=[i for i in entity_2.ents if i.label_!='PERSON']
     if DA_1.replace(' ','')!=text.replace(' ','') and len(entity_1)>=len(ents):
       aug.append('F:'+DA_1)
     if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and len(entity_0)>=len(ents):
@@ -194,8 +194,8 @@ def PosMask(sentence,unmasker,evidence):
         DA_0=unmasker(masked_sent_0)[0]['sequence']
         masked_sent_1='REFUTED '+' '.join([token.text for token in doc][:i])+' [MASK] '+' '.join([token.text for token in doc][i+1:])+' REFUTED'+' [SEP] '+evidence
         DA_1=unmasker(masked_sent_1)[0]['sequence']
-        DA_0=DA_0.split(' [SEP] ')[0]
-        DA_1=DA_1.split(' [SEP] ')[0]
+        DA_0=DA_0.split(' SUPPORTED')[0]
+        DA_1=DA_1.split(' REFUTED')[0]
         DA_0=DA_0.replace('SUPPORTED ','')
         DA_1=DA_1.replace('REFUTED ','')
         DA_0=DA_0.replace(' SUPPORTED','')

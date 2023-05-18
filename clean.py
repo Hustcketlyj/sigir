@@ -216,8 +216,6 @@ def da(filename,i):
   with open('./low_resource_LR10_'+str(i)+'_DA.jsonl','w') as outfile:
     for item in original_data:
       text=item['text']
-      evidence=text.split(' [SEP] ')[1]
-      text=text.split(' [SEP] ')[0]
       id=item['id']
       if 'SUPPORTED' in text:
         label=0
@@ -225,6 +223,10 @@ def da(filename,i):
         label=1
       else:
         label=2
+        evidence=''
+      if label!=2:
+        evidence=text.split(' [SEP] ')[1]
+        text=text.split(' [SEP] ')[0]
       text=text.replace('SUPPORTED ','')
       text=text.replace(' SUPPORTED','')
       text=text.replace('REFUTED ','')

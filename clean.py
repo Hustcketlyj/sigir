@@ -184,6 +184,9 @@ def PosMask(sentence,unmasker,evidence):
   text=text.replace(' SUPPORTED','')
   text=text.replace('REFUTED ','')
   text=text.replace(' REFUTED','')
+  flag=0
+  if 'NOT ENOUGH INFORMATION' in text:
+     flag=1
   text=text.replace('NOT ENOUGH INFORMATION ','')
   text=text.replace(' NOT ENOUGH INFORMATION','')
   doc = nlp(text)
@@ -197,16 +200,23 @@ def PosMask(sentence,unmasker,evidence):
         DA_0=unmasker(masked_sent_0)[0]['sequence']
         masked_sent_1='REFUTED '+' '.join([token.text for token in doc][:i])+' [MASK] '+' '.join([token.text for token in doc][i+1:])+' REFUTED'+' [SEP] '+evidence
         DA_1=unmasker(masked_sent_1)[0]['sequence']
+        masked_sent_2='NOT ENOUGH INFORMATION '+' '.join([token.text for token in doc][:i])+' [MASK] '+' '.join([token.text for token in doc][i+1:])+' NOT ENOUGH INFORMATION'+' [SEP] '+evidence
+        DA_2=unmasker(masked_sent_2)[0]['sequence']
+        DA_2=DA_2.split(' NOT ENOUGH INFORMATION')[0]
         DA_0=DA_0.split(' SUPPORTED')[0]
         DA_1=DA_1.split(' REFUTED')[0]
+        DA_2=DA_2.replace('NOT ENOUGH INFORMATION ','')
+        DA_2=DA_2.replace(' NOT ENOUGH INFORMATION','')
         DA_0=DA_0.replace('SUPPORTED ','')
         DA_1=DA_1.replace('REFUTED ','')
         DA_0=DA_0.replace(' SUPPORTED','')
         DA_1=DA_1.replace(' REFUTED','')
-        if DA_1.replace(' ','')!=text.replace(' ',''):
+        if DA_1.replace(' ','')!=text.replace(' ','') and flag==0:
           aug.append('F:'+DA_1)
-        if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ',''):
+        if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and flag==0:
           aug.append('T:'+DA_0)
+        if DA_2.replace(' ','')!=text.replace(' ','') and flag==1:
+          aug.append('N:'+DA_2)
   
   return aug
 

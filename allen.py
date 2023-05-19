@@ -80,3 +80,4 @@ for i in range(20):
     train_mvlm_datasets = train_mvlm.map(tokenize_function, batched=True)
     train(train_gold_datasets,'gold only_'+str(i))
     train(train_mvlm_datasets,'mvlm_'+str(i))
+    train(train_eda_datasets,'eda_'+str(i))

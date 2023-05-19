@@ -131,11 +131,14 @@ def whole_word_masking_data_collator(features):
         #print('after',len(feature['input_ids']))
     return default_data_collator(features)
 
-def NerMask(sentence,unmasker,evidence):#label is supported
+def NerMask(sentence,unmasker,evidence):
   text=sentence.replace('SUPPORTED ','')
   text=text.replace(' SUPPORTED','')
   text=text.replace('REFUTED ','')
   text=text.replace(' REFUTED','')
+  flag=0
+  if 'NOT ENOUGH INFORMATION' in text:
+     flag=1
   text=text.replace('NOT ENOUGH INFORMATION ','')
   text=text.replace('NOT ENOUGH INFORMATION ','')
   doc=nlp(text)
@@ -168,12 +171,12 @@ def NerMask(sentence,unmasker,evidence):#label is supported
     DA_2=DA_2.replace(' NOT ENOUGH INFORMATION','')
     entity_2=nlp(DA_2)
     entity_2=[i for i in entity_2.ents if i.label_!='PERSON']
-    if DA_1.replace(' ','')!=text.replace(' ','') and len(entity_1)>=len(ents):
+    if DA_1.replace(' ','')!=text.replace(' ','') and len(entity_1)>=len(ents) and flag==0:
       aug.append('F:'+DA_1)
-    if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and len(entity_0)>=len(ents):
+    if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and len(entity_0)>=len(ents) and flag==0:
       aug.append('T:'+DA_0)
-    #if DA_2.replace(' ','')!=text.replace(' ','') and DA_2.replace(' ','')!=DA_1.replace(' ','') and DA_2.replace(' ','')!=DA_0.replace(' ',''):
-    #  aug.append('N:'+DA_2)
+    if DA_2.replace(' ','')!=text.replace(' ','') and flag==1 and len(entity_2)>=len(ents):
+      aug.append('N:'+DA_2)
   return aug
 
 def PosMask(sentence,unmasker,evidence):

@@ -66,7 +66,7 @@ def subsample(filename='train_selected_person_nn.json',n=20):
   f.close()
 
 def tokenize_function(examples):
-    result = tokenizer(examples["text"],padding='max_length', max_length=128)
+    result = tokenizer(examples["text"],padding='max_length', max_length=256)
     if tokenizer.is_fast:
         result["word_ids"] = [result.word_ids(i) for i in range(len(result["input_ids"]))]
     return result
@@ -323,7 +323,7 @@ for i in range(20):
       tokenize_function, batched=True, remove_columns=["text",'id']
   )
   print('datasets tokenized...')
-  chunk_size = 128
+  chunk_size = 256
   lm_datasets = tokenized_datasets.map(group_texts, batched=True)
   print('datasets complete...')
   #lm_datasets

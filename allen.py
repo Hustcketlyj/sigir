@@ -42,7 +42,7 @@ training_args = TrainingArguments(output_dir="test_trainer")
 metric = evaluate.load("accuracy")
 training_args = TrainingArguments(output_dir="test_trainer", evaluation_strategy="epoch",num_train_epochs=8.0)
 
-def train(dataset,msg):
+def train(dataset,msg,i=None):
     print(msg)
     model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=3)
     trainer = Trainer(
@@ -52,6 +52,16 @@ def train(dataset,msg):
     eval_dataset=eva_datasets,
     compute_metrics=compute_metrics,)
     trainer.train()
+    evaluateTrainer(trainer,eva_datasets,i)
+
+def evaluateTrainer(trainer,evaData):
+    predictions = trainer.predict(evaData)
+    preds = np.argmax(predictions.predictions, axis=-1)
+    if i:
+        return [accuracy_score(predictions.label_ids,preds),f1_score(predictions.label_ids,preds),i]
+    else:
+        return [accuracy_score(predictions.label_ids,preds),f1_score(predictions.label_ids,preds)]
+
 
 def EDA(data):
     total=[]
@@ -63,6 +73,32 @@ def EDA(data):
             tmp.remove(random.choice(tmp))
             total.append({'label':item['label']-10,'text':'[CLS] '+' '.join(tmp)+' [SEP] '+item['LM']+' [SEP]'})
     return total
+
+def sort(result,num=10):
+    target=result['mvlm']
+    tmp = sorted(target, key=lambda d: d[0])
+    tmp=tmp[:num]
+    mean_acc={'gold':0,'mvlm':0,'eda':0}
+    mean_f1={'gold':0,'mvlm':0,'eda':0}
+    for item in tmp:
+        index=tmp[2]
+        mean_acc['mvlm']+=item[0]
+        mean_acc['gold']+=result['gold'][index][0]
+        mean_acc['eda']+=result['eda'][index][0]
+        mean_f1['mvlm']+=item[1]
+        mean_f1['gold']+=result['gold'][index][1]
+        mean_f1['eda']+=result['eda'][index][1]
+    print('**'*15)
+    print('acc-gold:', mean_acc['gold']/num)
+    print('acc-eda:', mean_acc['eda']/num)
+    print('acc-mvlm:', mean_acc['mvlm']/num)
+    print('**'*5)
+    print('f1-gold:', mean_f1['gold']/num)
+    print('f1-eda:', mean_f1['eda']/num)
+    print('f1-mvlm:', mean_f1['mvlm']/num)
+
+
+result={'gold':[],'mvlm':[],'eda':[]}
 
 for i in range(20):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
@@ -78,6 +114,10 @@ for i in range(20):
     train_eda_datasets = train_eda.map(tokenize_function, batched=True)
     train_mvlm=datasets.Dataset.from_pandas(pd.DataFrame(data=train_mvlm))
     train_mvlm_datasets = train_mvlm.map(tokenize_function, batched=True)
-    train(train_gold_datasets,'gold only_'+str(i))
-    train(train_mvlm_datasets,'mvlm_'+str(i))
-    train(train_eda_datasets,'eda_'+str(i))
+    result['gold'].append(train(train_gold_datasets,'gold only_'+str(i),i))
+    result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i)))
+    result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
+
+sort(result)
+
+    

@@ -54,7 +54,7 @@ def train(dataset,msg,i=None):
     trainer.train()
     evaluateTrainer(trainer,eva_datasets,i)
 
-def evaluateTrainer(trainer,evaData):
+def evaluateTrainer(trainer,evaData,i):
     predictions = trainer.predict(evaData)
     preds = np.argmax(predictions.predictions, axis=-1)
     if i:

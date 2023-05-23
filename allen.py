@@ -81,7 +81,7 @@ def sort(result,num=10):
     mean_acc={'gold':0,'mvlm':0,'eda':0}
     mean_f1={'gold':0,'mvlm':0,'eda':0}
     for item in tmp:
-        index=tmp[2]
+        index=item[2]
         mean_acc['mvlm']+=item[0]
         mean_acc['gold']+=result['gold'][index][0]
         mean_acc['eda']+=result['eda'][index][0]

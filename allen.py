@@ -117,6 +117,7 @@ for i in range(20):
     result['gold'].append(train(train_gold_datasets,'gold only_'+str(i),i))
     result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i)))
     result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
+    print(result)
 
 sort(result)
 

@@ -52,7 +52,7 @@ def train(dataset,msg,i=None):
     eval_dataset=eva_datasets,
     compute_metrics=compute_metrics,)
     trainer.train()
-    evaluateTrainer(trainer,eva_datasets,i)
+    return evaluateTrainer(trainer,eva_datasets,i)
 
 def evaluateTrainer(trainer,evaData,i):
     predictions = trainer.predict(evaData)
@@ -114,8 +114,8 @@ for i in range(20):
     train_eda_datasets = train_eda.map(tokenize_function, batched=True)
     train_mvlm=datasets.Dataset.from_pandas(pd.DataFrame(data=train_mvlm))
     train_mvlm_datasets = train_mvlm.map(tokenize_function, batched=True)
-    result['gold'].append(train(train_gold_datasets,'gold only_'+str(i),i))
-    result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i)))
+    result['gold'].append(train(train_gold_datasets,'gold only_'+str(i)))
+    result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i),i))
     result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
     print(result)
 

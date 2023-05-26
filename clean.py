@@ -171,11 +171,11 @@ def NerMask(sentence,unmasker,evidence):
     DA_2=DA_2.replace(' NOT ENOUGH INFORMATION','')
     entity_2=nlp(DA_2)
     entity_2=[i for i in entity_2.ents if i.label_!='PERSON']
-    if DA_1.replace(' ','')!=text.replace(' ','') and len(entity_1)>=len(ents) and flag==0:
+    if DA_1.replace(' ','')!=text.replace(' ','') and len(entity_1)>=len(ents) and evidence!='':
       aug.append('F:'+DA_1)
-    if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and len(entity_0)>=len(ents) and flag==0:
+    if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and len(entity_0)>=len(ents) and evidence!='':
       aug.append('T:'+DA_0)
-    if DA_2.replace(' ','')!=text.replace(' ','') and flag==1 and len(entity_2)>=len(ents):
+    if DA_2.replace(' ','')!=text.replace(' ','') and evidence=='' and len(entity_2)>=len(ents):
       aug.append('N:'+DA_2)
   return aug
 
@@ -211,11 +211,11 @@ def PosMask(sentence,unmasker,evidence):
         DA_1=DA_1.replace('REFUTED ','')
         DA_0=DA_0.replace(' SUPPORTED','')
         DA_1=DA_1.replace(' REFUTED','')
-        if DA_1.replace(' ','')!=text.replace(' ','') and flag==0:
+        if DA_1.replace(' ','')!=text.replace(' ','') and evidence!='':
           aug.append('F:'+DA_1)
-        if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and flag==0:
+        if DA_0.replace(' ','')!=text.replace(' ','') and DA_0.replace(' ','')!=DA_1.replace(' ','') and evidence!='':
           aug.append('T:'+DA_0)
-        if DA_2.replace(' ','')!=text.replace(' ','') and flag==1:
+        if DA_2.replace(' ','')!=text.replace(' ','') and evidence=='':
           aug.append('N:'+DA_2)
   
   return aug

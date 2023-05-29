@@ -171,7 +171,7 @@ for i in range(3):
     train_mvlm=[{'label':item['label']%10,'text':'[CLS] '+item['claim']+' [SEP] '+item['LM']+' [SEP]'} for item in data]
     train_eda=EDA(data)
     train_backtrans=backtrans(data)
-    train_qacg=QACG(data)
+    train_qacg=QACG(data,i)
 
     tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 

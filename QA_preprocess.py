@@ -11,8 +11,6 @@ for i in range(34):
       item['context'] = item.pop('LM')
       result.append(item)
   print(len(result))
-  for i in result:
-    print(i)
   json_object = json.dumps(result)
   new_filename='low_resource_LR10_'+str(i)+'_QA.json'
   with open(new_filename, "w") as outfile:

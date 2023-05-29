@@ -115,10 +115,16 @@ def QACG(data,i):
             path='../Zero-shot-Fact-Verification/output/'
             support=path+'SUPPORTED_claims_'+str(i)+'.json'
             refuted=path+'REFUTED_claims_'+str(i)+'.json'
-            f = open(support)
-            qacg = json.load(f)
-            f = open(refuted)
-            qacg += json.load(f)
+            try:
+                f = open(support)
+                qacg = json.load(f)
+            except:
+                qacg=[]
+            try:
+                f = open(refuted)
+                qacg += json.load(f)
+            except:
+                qacg += []
             for item in qacg:
                 total.append({'label':labe2num[item['label']],'text':'[CLS] '+item['claim']+' [SEP] '+item['context']+' [SEP]'}) 
     return total

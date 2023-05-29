@@ -9,7 +9,7 @@ for i in range(34):
     item['context'] = item.pop('LM')
   #print(data[:2])
   json_object = json.dumps(data)
-  new_filename='low_resource_LR10_'+str(i)+'_QA.json'
+  new_filename='../Zero-shot-Fact-Verification/data/low_resource_LR10_'+str(i)+'_QA.json'
   with open(new_filename, "w") as outfile:
     outfile.write(json_object)
   outfile.close()

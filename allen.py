@@ -106,39 +106,58 @@ def backtrans(data):
                 total.append({'label':item['label']-10,'text':'[CLS] '+back_translated_texts[0]+' [SEP] '+item['LM']+' [SEP]'})
     return total
 
-
+def QACG(data,i):
+    labe2num={'SUPPORTED':0,'REFUTED':1}
+    total=[]
+    for item in data:
+        if item['label']>=10:
+            total.append({'label':item['label']-10,'text':'[CLS] '+item['claim']+' [SEP] '+item['LM']+' [SEP]'})
+            path='../Zero-shot-Fact-Verification/output/'
+            support=path+'SUPPORTED_claims_'+str(i)+'.json'
+            refuted=path+'REFUTED_claims_'+str(i)+'.json'
+            f = open(support)
+            qacg = json.load(f)
+            f = open(refuted)
+            qacg += json.load(f)
+            for item in qacg:
+                total.append({'label':labe2num[item['label']],'text':'[CLS] '+item['claim']+' [SEP] '+item['context']+' [SEP]'}) 
+    return total
 
 def sort(result,num=10):
     target=result['mvlm']
     tmp = sorted(target, key=lambda d: d[0])
     tmp=tmp[:num]
-    mean_acc={'gold':0,'mvlm':0,'eda':0,'bt':0}
-    mean_f1={'gold':0,'mvlm':0,'eda':0,'bt':0}
+    mean_acc={'gold':0,'mvlm':0,'eda':0,'bt':0,'qacg':0}
+    mean_f1={'gold':0,'mvlm':0,'eda':0,'bt':0,'qacg':0}
     for item in tmp:
         index=item[2]
         mean_acc['mvlm']+=item[0]
         mean_acc['gold']+=result['gold'][index][0]
         mean_acc['eda']+=result['eda'][index][0]
         mean_acc['bt']+=result['bt'][index][0]
+        mean_acc['qacg']+=result['qacg'][index][0]
         mean_f1['mvlm']+=item[1]
         mean_f1['gold']+=result['gold'][index][1]
         mean_f1['eda']+=result['eda'][index][1]
         mean_f1['bt']+=result['bt'][index][1]
+        mean_f1['qacg']+=result['qacg'][index][1]
     print('**'*15)
     print('acc-gold:', mean_acc['gold']/num)
     print('acc-eda:', mean_acc['eda']/num)
     print('acc-mvlm:', mean_acc['mvlm']/num)
     print('acc-bt:', mean_acc['bt']/num)
+    print('acc-QACG:', mean_acc['qacg']/num)
     print('**'*5)
     print('f1-gold:', mean_f1['gold']/num)
     print('f1-eda:', mean_f1['eda']/num)
     print('f1-mvlm:', mean_f1['mvlm']/num)
     print('f1-bt:', mean_f1['bt']/num)
+    print('f1-QACG:', mean_f1['qacg']/num)
 
 
-result={'gold':[],'mvlm':[],'eda':[],'backtrans':[]}
+result={'gold':[],'mvlm':[],'eda':[],'backtrans':[],'qacg':[]}
 
-for i in range(20):
+for i in range(34):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
     f=jsonlines.open(data_DA)
     data=[line for line in f.iter()]
@@ -146,19 +165,31 @@ for i in range(20):
     train_mvlm=[{'label':item['label']%10,'text':'[CLS] '+item['claim']+' [SEP] '+item['LM']+' [SEP]'} for item in data]
     train_eda=EDA(data)
     train_backtrans=backtrans(data)
+    train_qacg=QACG(data)
+
     tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+
     train_gold=datasets.Dataset.from_pandas(pd.DataFrame(data=train_gold))
     train_gold_datasets = train_gold.map(tokenize_function, batched=True)
+
     train_eda=datasets.Dataset.from_pandas(pd.DataFrame(data=train_eda))
     train_eda_datasets = train_eda.map(tokenize_function, batched=True)
+
     train_mvlm=datasets.Dataset.from_pandas(pd.DataFrame(data=train_mvlm))
     train_mvlm_datasets = train_mvlm.map(tokenize_function, batched=True)
+
     train_backtrans=datasets.Dataset.from_pandas(pd.DataFrame(data=train_backtrans))
     train_backtrans_datasets = train_backtrans.map(tokenize_function, batched=True)
+
+    train_qacg=datasets.Dataset.from_pandas(pd.DataFrame(data=train_qacg))
+    train_qacg_datasets = train_qacg.map(tokenize_function, batched=True)
+
     result['gold'].append(train(train_gold_datasets,'gold only_'+str(i)))
     result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i),i))
     result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
     result['backtrans'].append(train(train_backtrans_datasets,'backtrans_'+str(i)))
+    result['qacg'].append(train(train_qacg_datasets,'QACG_'+str(i)))
+    
     print(result)
 
 sort(result)

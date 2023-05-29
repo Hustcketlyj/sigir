@@ -129,7 +129,7 @@ def QACG(data,i):
                 total.append({'label':labe2num[item['label']],'text':'[CLS] '+item['claim']+' [SEP] '+item['context']+' [SEP]'}) 
     return total
 
-def sort(result,num=10):
+def sort(result,num=2):
     target=result['mvlm']
     tmp = sorted(target, key=lambda d: d[0])
     tmp=tmp[:num]
@@ -163,7 +163,7 @@ def sort(result,num=10):
 
 result={'gold':[],'mvlm':[],'eda':[],'backtrans':[],'qacg':[]}
 
-for i in range(34):
+for i in range(3):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
     f=jsonlines.open(data_DA)
     data=[line for line in f.iter()]

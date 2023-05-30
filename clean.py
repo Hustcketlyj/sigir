@@ -65,6 +65,21 @@ def subsample(filename='train_selected_person_nn.json',n=20):
     outfile.close()
   f.close()
 
+def subsample0evi(filename='low_resource_LR10_',n=34):
+  for i in range(n):
+    f=jsonlines.open(filename+str(i)+'_DA_allen.jsonl')
+    data=[line for line in f.iter()]
+    data_0=[['SUPPORTED '+line['claim']+' SUPPORTED',line['id']] for line in all if line['label']==10]
+    data_1=[['REFUTED '+line['claim']+' REFUTED',line['id']] for line in all if line['label']==11]
+    data_2=[['NOT ENOUGH INFORMATION '+line['claim']+' NOT ENOUGH INFORMATION',line['id']] for line in all if line['label']==12]
+    print(len(data_0),len(data_1),len(data_2))
+    json_object = json.dumps(data_0+data_1+data_2)
+    new_filename='low_resource_LR10_'+str(i)+'_pretuned.json'
+    with open(new_filename, "w") as outfile:
+      outfile.write(json_object)
+    outfile.close()
+  f.close()
+
 def tokenize_function(examples):
     result = tokenizer(examples["text"],padding='max_length', max_length=128,truncation=True)
     if tokenizer.is_fast:

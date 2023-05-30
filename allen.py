@@ -161,7 +161,7 @@ def sort(result,num=2):
     print('f1-QACG:', mean_f1['qacg']/num)
 
 
-result={'gold':[],'mvlm':[],'eda':[],'backtrans':[],'qacg':[]}
+result={'gold':[],'mvlm':[],'eda':[],'bt':[],'qacg':[]}
 
 for i in range(3):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'

@@ -133,8 +133,8 @@ def sort(result,num=2):
     target=result['mvlm']
     tmp = sorted(target, key=lambda d: d[0])
     tmp=tmp[:num]
-    mean_acc={'gold':0,'mvlm':0,'eda':0,'bt':0,'qacg':0}
-    mean_f1={'gold':0,'mvlm':0,'eda':0,'bt':0,'qacg':0}
+    mean_acc={'gold':0,'mvlm':0,'eda':0,'bt':0,'qacg':0,'noevi':0}
+    mean_f1={'gold':0,'mvlm':0,'eda':0,'bt':0,'qacg':0,'noevi':0}
     for item in tmp:
         index=item[2]
         mean_acc['mvlm']+=item[0]
@@ -142,26 +142,36 @@ def sort(result,num=2):
         mean_acc['eda']+=result['eda'][index][0]
         mean_acc['bt']+=result['bt'][index][0]
         mean_acc['qacg']+=result['qacg'][index][0]
+        mean_acc['noevi']+=result['noevi'][index][0]
         mean_f1['mvlm']+=item[1]
         mean_f1['gold']+=result['gold'][index][1]
         mean_f1['eda']+=result['eda'][index][1]
         mean_f1['bt']+=result['bt'][index][1]
         mean_f1['qacg']+=result['qacg'][index][1]
+        mean_f1['noevi']+=result['noevi'][index][1]
     print('**'*15)
     print('acc-gold:', mean_acc['gold']/num)
     print('acc-eda:', mean_acc['eda']/num)
     print('acc-mvlm:', mean_acc['mvlm']/num)
     print('acc-bt:', mean_acc['bt']/num)
     print('acc-QACG:', mean_acc['qacg']/num)
+    print('acc-mvlm_wo_evidence:', mean_acc['noevi']/num)
     print('**'*5)
     print('f1-gold:', mean_f1['gold']/num)
     print('f1-eda:', mean_f1['eda']/num)
     print('f1-mvlm:', mean_f1['mvlm']/num)
     print('f1-bt:', mean_f1['bt']/num)
     print('f1-QACG:', mean_f1['qacg']/num)
+    print('f1-mvlm_wo_evidence:', mean_f1['noevi']/num)
 
+def mvlm_wo_evidence(i):
+    data_DA='./wo_evidence/low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
+    f=jsonlines.open(data_DA)
+    data=[line for line in f.iter()]
+    train_mvlm=[{'label':item['label']%10,'text':'[CLS] '+item['claim']+' [SEP] '+item['LM']+' [SEP]'} for item in data]
+    return train_mvlm
 
-result={'gold':[],'mvlm':[],'eda':[],'bt':[],'qacg':[]}
+result={'gold':[],'mvlm':[],'eda':[],'bt':[],'qacg':[],'noevi':[]}
 
 for i in range(3):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
@@ -172,6 +182,7 @@ for i in range(3):
     train_eda=EDA(data)
     train_backtrans=backtrans(data)
     train_qacg=QACG(data,i)
+    train_mvlm_wo_evidence=mvlm_wo_evidence(i)
 
     tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 
@@ -190,11 +201,15 @@ for i in range(3):
     train_qacg=datasets.Dataset.from_pandas(pd.DataFrame(data=train_qacg))
     train_qacg_datasets = train_qacg.map(tokenize_function, batched=True)
 
+    train_mvlm_wo_evidence=datasets.Dataset.from_pandas(pd.DataFrame(data=train_mvlm_wo_evidence))
+    train_mvlm_wo_evidence_datasets=train_mvlm_wo_evidence.map(tokenize_function, batched=True)
+
     result['gold'].append(train(train_gold_datasets,'gold only_'+str(i)))
     result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i),i))
     result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
     result['bt'].append(train(train_backtrans_datasets,'backtrans_'+str(i)))
     result['qacg'].append(train(train_qacg_datasets,'QACG_'+str(i)))
+    result['noevi'].append(train(train_mvlm_wo_evidence_datasets,'MVLM_wo_evidence_'+str(i)))
     
     print(result)
 

@@ -73,7 +73,8 @@ def subsample0evi(filename='low_resource_LR10_',n=34):
     data_1=[['REFUTED '+line['claim']+' REFUTED',line['id']] for line in data if line['label']==11]
     data_2=[['NOT ENOUGH INFORMATION '+line['claim']+' NOT ENOUGH INFORMATION',line['id']] for line in data if line['label']==12]
     print(len(data_0),len(data_1),len(data_2))
-    json_object = json.dumps(data_0+data_1+data_2)
+    data = [{'id':i[1],'text':i[0]} for i in data_0+data_1+data_2]
+    json_object = json.dumps(data)
     new_filename='low_resource_LR10_'+str(i)+'_pretuned.json'
     with open(new_filename, "w") as outfile:
       outfile.write(json_object)
@@ -325,7 +326,7 @@ subsample()
     #"fill-mask", model="jojoUla/bert-large-cased-sigir-support-refute-no-label-40"
 #    "fill-mask", model="bert-large-cased"
 ##)
-for i in range(20):
+for i in range(34):
   model_checkpoint="jojoUla/bert-large-cased-sigir-support-refute-no-label-40"
   tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
   model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)

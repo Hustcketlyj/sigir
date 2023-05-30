@@ -193,7 +193,7 @@ for i in range(3):
     result['gold'].append(train(train_gold_datasets,'gold only_'+str(i)))
     result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i),i))
     result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
-    result['backtrans'].append(train(train_backtrans_datasets,'backtrans_'+str(i)))
+    result['bt'].append(train(train_backtrans_datasets,'backtrans_'+str(i)))
     result['qacg'].append(train(train_qacg_datasets,'QACG_'+str(i)))
     
     print(result)

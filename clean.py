@@ -255,6 +255,7 @@ def da(filename,i):
         evidence=''
       if label!=2:
         evidence=text.split(' [SEP] ')[1]
+        if evidence=='':evidence=' '
         text=text.split(' [SEP] ')[0]
       text=text.replace('SUPPORTED ','')
       text=text.replace(' SUPPORTED','')

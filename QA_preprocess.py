@@ -7,7 +7,7 @@ for i in range(34):
   data=[line for line in f.iter()]
   result=[]
   for item in data:
-    if item['label'] in [10,11,12]:
+    if item['label'] in [10,11]:
       item['context'] = item.pop('LM')
       result.append(item)
   print(len(result))

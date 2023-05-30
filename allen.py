@@ -58,7 +58,7 @@ def train(dataset,msg,i=None):
 def evaluateTrainer(trainer,evaData,i):
     predictions = trainer.predict(evaData)
     preds = np.argmax(predictions.predictions, axis=-1)
-    if i:
+    if i!=None:
         return [accuracy_score(predictions.label_ids,preds),f1_score(predictions.label_ids,preds, average='macro'),i]
     else:
         return [accuracy_score(predictions.label_ids,preds),f1_score(predictions.label_ids,preds, average='macro')]

@@ -173,7 +173,7 @@ def mvlm_wo_evidence(i):
 
 result={'gold':[],'mvlm':[],'eda':[],'bt':[],'qacg':[],'noevi':[]}
 
-for i in range(3):
+for i in range(34):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
     f=jsonlines.open(data_DA)
     data=[line for line in f.iter()]
@@ -212,7 +212,8 @@ for i in range(3):
     result['noevi'].append(train(train_mvlm_wo_evidence_datasets,'MVLM_wo_evidence_'+str(i)))
     
     print(result)
-
-sort(result)
+for i in [2,3,5,7,10,12,15]:
+    print('result for ',i)
+    sort(result,i)
 
     

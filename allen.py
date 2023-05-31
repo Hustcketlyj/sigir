@@ -173,7 +173,7 @@ def mvlm_wo_evidence(i):
 
 result={'gold':[],'mvlm':[],'eda':[],'bt':[],'qacg':[],'noevi':[]}
 
-for i in range(34):
+for i in range(26):
     data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
     f=jsonlines.open(data_DA)
     data=[line for line in f.iter()]

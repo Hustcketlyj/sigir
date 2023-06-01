@@ -113,8 +113,8 @@ def QACG(data,i):
         if item['label']>=10:
             total.append({'label':item['label']-10,'text':'[CLS] '+item['claim']+' [SEP] '+item['LM']+' [SEP]'})
             path='../Zero-shot-Fact-Verification/output/'
-            support=path+'SUPPORTED_claims_'+str(i)+'.json'
-            refuted=path+'REFUTED_claims_'+str(i)+'.json'
+            support=path+'SUPPORTED_LR50_claims_'+str(i)+'.json'
+            refuted=path+'REFUTED_LR50_claims_'+str(i)+'.json'
             try:
                 f = open(support)
                 qacg = json.load(f)

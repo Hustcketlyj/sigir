@@ -117,12 +117,13 @@ def QACG(data,i):
             refuted=path+'REFUTED_LR50_claims_'+str(i)+'.json'
             try:
                 f = open(support)
-                qacg = json.load(f)
+                qacg = json.load(f)[:25]
             except:
                 qacg=[]
             try:
                 f = open(refuted)
-                qacg += json.load(f)
+                tmp=json.load(f)
+                qacg += tmp[:25]
             except:
                 qacg += []
             for item in qacg:
@@ -204,12 +205,12 @@ for i in range(20):
     train_mvlm_wo_evidence=datasets.Dataset.from_pandas(pd.DataFrame(data=train_mvlm_wo_evidence))
     train_mvlm_wo_evidence_datasets=train_mvlm_wo_evidence.map(tokenize_function, batched=True)
 
-    result['gold'].append(train(train_gold_datasets,'gold only_'+str(i)))
-    result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i),i))
-    result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
-    result['bt'].append(train(train_backtrans_datasets,'backtrans_'+str(i)))
+    #result['gold'].append(train(train_gold_datasets,'gold only_'+str(i)))
+    #result['mvlm'].append(train(train_mvlm_datasets,'mvlm_'+str(i),i))
+    #result['eda'].append(train(train_eda_datasets,'eda_'+str(i)))
+    #result['bt'].append(train(train_backtrans_datasets,'backtrans_'+str(i)))
     result['qacg'].append(train(train_qacg_datasets,'QACG_'+str(i)))
-    result['noevi'].append(train(train_mvlm_wo_evidence_datasets,'MVLM_wo_evidence_'+str(i)))
+    #result['noevi'].append(train(train_mvlm_wo_evidence_datasets,'MVLM_wo_evidence_'+str(i)))
     
     print(result)
 for i in [2,3,5,7,10,12,15]:

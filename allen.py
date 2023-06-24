@@ -118,13 +118,13 @@ def QACG(data,i):
             try:
                 f = open(support)
                 qacg = json.load(f)
-                qacg = qacg[:8]
+                qacg = qacg
             except:
                 qacg=[]
             try:
                 f = open(refuted)
                 tmp=json.load(f)
-                qacg += tmp[:8]
+                qacg += tmp
             except:
                 qacg += []
             for item in qacg:
@@ -176,7 +176,7 @@ def mvlm_wo_evidence(i):
 result={'gold':[],'mvlm':[],'eda':[],'bt':[],'qacg':[],'noevi':[]}
 
 for i in range(20):
-    data_DA='./LR100/low_resource_LR100_'+str(i)+'_DA_allen.jsonl'
+    data_DA='./low_resource_LR10_'+str(i)+'_DA_allen.jsonl'
     f=jsonlines.open(data_DA)
     data=[line for line in f.iter()]
     train_gold=[{'label':item['label']-10,'text':'[CLS] '+item['claim']+' [SEP] '+item['LM']+' [SEP]'} for item in data if item['label']>=10]
@@ -213,9 +213,9 @@ for i in range(20):
     #result['qacg'].append(train(train_qacg_datasets,'QACG_'+str(i)))
     #result['noevi'].append(train(train_mvlm_wo_evidence_datasets,'MVLM_wo_evidence_'+str(i)))
     
-    print(result)
-for i in [2,3,5,7,10,12,15]:
-    print('result for ',i)
-    sort(result,i)
+    #print(result)
+#for i in [2,3,5,7,10,12,15]:
+#    print('result for ',i)
+#    sort(result,i)
 
     

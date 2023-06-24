@@ -301,15 +301,6 @@ def allen(filename,i):
   with open('./low_resource_LR10_'+str(i)+'_DA_allen.jsonl','w') as outfile:
     for item in data:
       claim=item['claim']
-      #doc=nlp(claim)
-      #ents=[i for i in doc.ents if i.label_!='PERSON']
-      #if len(ents)==0:
-      #  premise='None'
-      #else:
-      #  start_pos=ents[-1].start_char
-      #  end_pos=ents[-1].end_char
-      #  masked_sent=claim[:start_pos]+'[MASK]'+claim[end_pos:]
-      #  unmasked=unmasker0(masked_sent)[0]['sequence']
       if item['id'] in evidence_key:
          premise=evidence[item['id']]
       else:
